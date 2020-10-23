@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.dao.PersonDao">
+
+    <resultMap type="com.example.entity.Person" id="PersonMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="nameRmai" column="NAME_RMAI" jdbcType="VARCHAR"/>
+        <result property="age" column="AGE" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="PersonMap">
+        select
+          id, NAME_RMAI, AGE
+        from test.person
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="PersonMap">
+        select
+          id, NAME_RMAI, AGE
+        from test.person
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="PersonMap">
+        select
+        id, NAME_RMAI, AGE
+        from test.person
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="nameRmai != null and nameRmai != ''">
+                and NAME_RMAI = #{nameRmai}
+            </if>
+            <if test="age != null">
+                and AGE = #{age}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into test.person(NAME_RMAI, AGE)
+        values (#{nameRmai}, #{age})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into test.person(NAME_RMAI, AGE)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.nameRmai}, #{entity.age})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into test.person(NAME_RMAI, AGE)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.nameRmai}, #{entity.age})
+        </foreach>
+        on duplicate key update
+        NAME_RMAI = values(NAME_RMAI) , AGE = values(AGE)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update test.person
+        <set>
+            <if test="nameRmai != null and nameRmai != ''">
+                NAME_RMAI = #{nameRmai},
+            </if>
+            <if test="age != null">
+                AGE = #{age},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from test.person where id = #{id}
+    </delete>
+
+</mapper>
