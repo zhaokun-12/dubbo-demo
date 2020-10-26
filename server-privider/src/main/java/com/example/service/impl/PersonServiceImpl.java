@@ -52,8 +52,10 @@ public class PersonServiceImpl implements PersonService {
     @Override
     @Transactional
     public Person insert(Person person) {
+        if (Math.random() > 0.5) {
+            throw new RuntimeException();
+        }
         this.personDao.insert(person);
-        int i = 1 / 0;
         return person;
     }
 
